@@ -4,6 +4,7 @@ import './App.css'
 import All from '@/examples/all'
 import Amd from './examples/amd'
 import Post from './examples/post'
+import TransformResponse from './examples/transform-response'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -44,4 +45,4 @@ function App() {
   )
 }
 
-export default Post
+export default TransformResponse

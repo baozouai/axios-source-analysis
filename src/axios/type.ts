@@ -83,7 +83,27 @@ export interface AxiosRequestConfig<D = any> {
   method?: Method;
   baseURL?: string;
   transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
-  transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
+  // transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
+  /** 
+   * 感觉这里只能是数组类型
+   * 用于转换response.data的数据，比如:
+   * 
+   * @example
+   * 
+   * originData = {created_at: "2010-02-07T18:40:01Z", ...}
+   * 
+   * const ISO_8601 = /(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z/;
+   *  axios.defaults.transformResponse!.concat(function (data, headers) {
+   *     Object.keys(data).forEach(function (k) {
+   *       if (ISO_8601.test(data[k])) {
+   *         data[k] = data[k].split('T')[0];
+   *       }
+   *     });
+   *     return data;
+   *   })
+   *   那么newData = {created_at: '2010-02-07', ...}
+   *  */
+  transformResponse?: AxiosResponseTransformer[];
   headers?: AxiosRequestHeaders;
   params?: any;
   paramsSerializer?: (params: any) => string;

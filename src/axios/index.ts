@@ -17,7 +17,7 @@ import isCancel from './cancel/isCancel'
  * @param {Object} defaultConfig The default config for the instance
  * @return {Axios} A new instance of Axios
  */
-function createInstance(defaultConfig: AxiosRequestConfig): AxiosStatic {
+function createInstance<T>(defaultConfig: AxiosRequestConfig<T>): AxiosStatic {
   const context = new Axios(defaultConfig);
   // const instance = bind(Axios.prototype.request, context) as unknown as AxiosStatic;
   const instance = Axios.prototype.request.bind(context) as unknown as AxiosStatic;

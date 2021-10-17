@@ -10,20 +10,21 @@ import isURLSameOrigin from './../helpers/isURLSameOrigin';
 import createError from '../core/createError';
 import defaults from '../defaults';
 import Cancel from '../cancel/Cancel';
-import { AxiosRequestConfig } from '../type';
+import { AxiosRequestConfig, CancelListener } from '../type';
 
-export default  function xhrAdapter(config: AxiosRequestConfig) {
+export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
-    let requestData = config.data;
-    const requestHeaders = config.headers;
+    let requestData: D | null | undefined = config.data;
+    const requestHeaders = config.headers!;
     const responseType = config.responseType;
-    let onCanceled;
+    let onCanceled: CancelListener;
     function done() {
       if (config.cancelToken) {
         config.cancelToken.unsubscribe(onCanceled);
       }
 
       if (config.signal) {
+        // @ts-ignore
         config.signal.removeEventListener('abort', onCanceled);
       }
     }
@@ -32,7 +33,7 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
       delete requestHeaders['Content-Type']; // Let the browser set it
     }
 
-    let request = new XMLHttpRequest();
+    let request:XMLHttpRequest  = new XMLHttpRequest();
 
     // HTTP basic authentication
     if (config.auth) {
@@ -42,10 +43,10 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
     }
 
     var fullPath = buildFullPath(config.baseURL, config.url);
-    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+    request.open(config.method!.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
     // Set the request timeout in MS
-    request.timeout = config.timeout;
+    request.timeout = config.timeout!;
 
     function onloadend() {
       if (!request) {
@@ -70,9 +71,11 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
       }, function _reject(err) {
         reject(err);
         done();
+        // @ts-ignore
       }, response);
 
       // Clean up request
+      // @ts-ignore
       request = null;
     }
 
@@ -108,6 +111,7 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
       reject(createError('Request aborted', config, 'ECONNABORTED', request));
 
       // Clean up request
+      // @ts-ignore
       request = null;
     };
 
@@ -118,13 +122,14 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
       reject(createError('Network Error', config, null, request));
 
       // Clean up request
+      // @ts-ignore
       request = null;
     };
 
     // Handle timeout
     request.ontimeout = function handleTimeout() {
       let timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
-      const transitional = config.transitional || defaults.transitional;
+      const transitional = (config.transitional || defaults.transitional)!;
       if (config.timeoutErrorMessage) {
         timeoutErrorMessage = config.timeoutErrorMessage;
       }
@@ -135,6 +140,7 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
         request));
 
       // Clean up request
+      // @ts-ignore
       request = null;
     };
 
@@ -148,19 +154,19 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
         undefined;
 
       if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+        requestHeaders[config.xsrfHeaderName!] = xsrfValue;
       }
     }
 
     // Add headers to the request
     if ('setRequestHeader' in request) {
       forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+        if (typeof requestData === 'undefined' && (key as string).toLowerCase() === 'content-type') {
           // Remove Content-Type if data is undefined
           delete requestHeaders[key];
         } else {
           // Otherwise add header to the request
-          request.setRequestHeader(key, val);
+          request.setRequestHeader(key as string, val);
         }
       });
     }
@@ -188,18 +194,20 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
 
     if (config.cancelToken || config.signal) {
       // Handle cancellation
-      // eslint-disable-next-line func-names
-      onCanceled = function(cancel) {
+      // @ts-ignore
+      onCanceled = function(cancel?: {type?: string}) {
         if (!request) {
           return;
         }
         reject(!cancel || (cancel && cancel.type) ? new Cancel('canceled') : cancel);
         request.abort();
+        // @ts-ignore
         request = null;
       };
 
       config.cancelToken && config.cancelToken.subscribe(onCanceled);
       if (config.signal) {
+        // @ts-ignore
         config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }
@@ -209,6 +217,6 @@ export default  function xhrAdapter(config: AxiosRequestConfig) {
     }
 
     // Send the request
-    request.send(requestData);
+    request.send(requestData as Document | XMLHttpRequestBodyInit | null);
   });
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 import { forEach } from '../utils';
-import { FulfilledFn, RejectedFn, AxiosRequestConfig, InterceptorConfig, AxiosInterceptorManager, Interceptor } from '../type'
+import { FulfilledFn, RejectedFn, AxiosRequestConfig, InterceptorConfig, Interceptor } from '../type'
 
 export class InterceptorManager<V> {
   handlers: Array<Interceptor<V> | null> = [];

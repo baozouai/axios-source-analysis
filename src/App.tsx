@@ -43,4 +43,4 @@ function App() {
   )
 }
 
-export default Amd
+export default All

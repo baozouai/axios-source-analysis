@@ -1,10 +1,11 @@
 'use strict';
 
+import { Stream } from 'stream';
 import bind from './helpers/bind';
 
 // utils is a library of generic helper functions non-specific to axios
 
-var toString = Object.prototype.toString;
+const toString = Object.prototype.toString;
 
 /**
  * Determine if a value is an Array
@@ -12,7 +13,7 @@ var toString = Object.prototype.toString;
  * @param {Object} val The value to test
  * @returns {boolean} True if value is an Array, otherwise false
  */
-export function isArray<T = any>(val):val is Array<T> {
+export function isArray<T = any>(val: any):val is Array<T> {
   return toString.call(val) === '[object Array]';
 }
 
@@ -124,7 +125,7 @@ export function isPlainObject(val: object): boolean {
  * @param {Object} val The value to test
  * @returns {boolean} True if value is a Date, otherwise false
  */
-export function isDate(val): val is Date {
+export function isDate(val: any): val is Date {
   return toString.call(val) === '[object Date]';
 }
 
@@ -134,7 +135,7 @@ export function isDate(val): val is Date {
  * @param {Object} val The value to test
  * @returns {boolean} True if value is a File, otherwise false
  */
-export function isFile(val): val is File {
+export function isFile(val: any): val is File {
   return toString.call(val) === '[object File]';
 }
 
@@ -144,7 +145,7 @@ export function isFile(val): val is File {
  * @param {Object} val The value to test
  * @returns {boolean} True if value is a Blob, otherwise false
  */
-export function isBlob(val): val is Blob {
+export function isBlob(val: any): val is Blob {
   return toString.call(val) === '[object Blob]';
 }
 
@@ -154,7 +155,7 @@ export function isBlob(val): val is Blob {
  * @param {Object} val The value to test
  * @returns {boolean} True if value is a Function, otherwise false
  */
-export function isFunction(val): val is Function {
+export function isFunction(val: any): val is Function {
   return toString.call(val) === '[object Function]';
 }
 
@@ -164,7 +165,8 @@ export function isFunction(val): val is Function {
  * @param {Object} val The value to test
  * @returns {boolean} True if value is a Stream, otherwise false
  */
-export function isStream(val: any) {
+export function isStream(val: any): val is Stream {
+  // @ts-ignore
   return isObject(val) && isFunction(val.pipe);
 }
 
@@ -227,7 +229,7 @@ export function isStandardBrowserEnv():boolean {
  * @param {Object|Array} obj The object to iterate
  * @param {Function} fn The callback to invoke for each item
  */
-export function forEach<T = any>(obj: object | T[], fn) {
+export function forEach<T = any>(obj: any | T[], fn: (val: any, key: string | number, obj: any) => any) {
   // Don't bother if no value provided
   if (obj === null || typeof obj === 'undefined') {
     return;
@@ -241,12 +243,12 @@ export function forEach<T = any>(obj: object | T[], fn) {
 
   if (isArray(obj)) {
     // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
+    for (let i = 0, l = obj.length; i < l; i++) {
       fn.call(null, obj[i], i, obj);
     }
   } else {
     // Iterate over object keys
-    for (var key in obj) {
+    for (let key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         fn.call(null, obj[key], key, obj);
       }
@@ -272,8 +274,8 @@ export function forEach<T = any>(obj: object | T[], fn) {
  * @returns {Object} Result of all merge properties
  */
 export function merge(...objs: any[]) {
-  var result = {};
-  function assignValue(val, key) {
+  const result: Record<string | number, any> = {};
+  function assignValue(val: any, key: string | number) {
     if (isPlainObject(result[key]) && isPlainObject(val)) {
       result[key] = merge(result[key], val);
     } else if (isPlainObject(val)) {
@@ -285,7 +287,7 @@ export function merge(...objs: any[]) {
     }
   }
 
-  for (var i = 0, l = objs.length; i < l; i++) {
+  for (let i = 0, l = objs.length; i < l; i++) {
     forEach(objs[i], assignValue);
   }
   return result;
@@ -299,12 +301,14 @@ export function merge(...objs: any[]) {
  * @param {Object} thisArg The object to bind function to
  * @return {Object} The resulting value of object a
  */
-export function extend<T, U>(a: T, b: U, thisArg: any = null): T & U {
-  forEach(b, function assignValue(val, key) {
+export function extend<T extends object = any, U extends object = any>(a: T, b: U, thisArg: any = null): T & U {
+  forEach(b, function assignValue(val: any, key: string | number) {
     
     if (thisArg && typeof val === 'function') {
+      // @ts-ignore
       a[key] = bind(val, thisArg);
     } else {
+      // @ts-ignore
       a[key] = val;
     }
   });

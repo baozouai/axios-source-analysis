@@ -19,14 +19,16 @@ import isCancel from './cancel/isCancel'
  */
 function createInstance<T>(defaultConfig: AxiosRequestConfig<T>): AxiosStatic {
   const context = new Axios(defaultConfig);
-  // const instance = bind(Axios.prototype.request, context) as unknown as AxiosStatic;
-  const instance = Axios.prototype.request.bind(context) as unknown as AxiosStatic;
+  // 原始的instance只是Axios.prototype.request bind了context
+  const instance = bind(Axios.prototype.request, context) as unknown as AxiosStatic;
   // Copy axios.prototype to instance
+  // 复制axios原型上的属性到instance
   extend(instance, Axios.prototype, context);
-
   // Copy context to instance
+  // 复制context本身属性到instance
   extend(instance, context);
   // Factory for creating new instances
+  // 增加一个创建axios实例的工厂方法
   instance.create = function create(instanceConfig) {
     return createInstance(mergeConfig(defaultConfig, instanceConfig));
   };
@@ -55,4 +57,6 @@ axios.spread = spread;
 axios.isAxiosError = isAxiosError;
 
 // Allow use of default import syntax in TypeScript
-export default  axios;
+
+// export * from './type'
+export default axios;

@@ -17,8 +17,8 @@ export class InterceptorManager<V> {
     this.handlers.push({
       fulfilled: onFulfilled,
       rejected: onRejected,
-      synchronous: options ? options.synchronous : false,
-      runWhen: options ? options.runWhen : null
+      synchronous: options?.synchronous || false,
+      runWhen: options?.runWhen || null
     });
     return this.handlers.length - 1;
   }

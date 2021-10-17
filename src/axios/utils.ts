@@ -191,11 +191,16 @@ export function trim(str: string): string {
 }
 
 /**
+ * 是否是标准的浏览器环境
  * Determine if we're running in a standard browser environment
  *
  * This allows axios to run in a web worker, and react-native.
  * Both environments support XMLHttpRequest, but not fully standard globals.
  *
+ * @example
+ * 
+ * 这个允许axios在web worker、react-native或不完全是标准浏览器但支持XMLHttpRequest的环境
+ * 
  * web workers:
  *  typeof window -> undefined
  *  typeof document -> undefined

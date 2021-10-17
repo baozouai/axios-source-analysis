@@ -11,7 +11,7 @@ import { AxiosRequestConfig,AxiosResponse } from '../type'
  * @returns {Error} The error.
  */
 
- export default  function enhanceError(error: any, config:AxiosRequestConfig, code: string | null, request?: any, response?: AxiosResponse) {
+ export default  function enhanceError(error: any, config:AxiosRequestConfig, code?: string | null, request?: any, response?: AxiosResponse) {
   error.config = config;
   if (code) {
     error.code = code;

@@ -1,5 +1,6 @@
 'use strict';
 
+import { AxiosResponse } from '../type';
 import createError from './createError';
 
 /**
@@ -9,7 +10,7 @@ import createError from './createError';
  * @param {Function} reject A function that rejects the promise.
  * @param {object} response The response.
  */
- export default function settle(resolve: (value) => any, reject: (reason) => any, response) {
+ export default function settle(resolve: (value: any) => any, reject: (reason: any) => any, response: AxiosResponse) {
   var validateStatus = response.config.validateStatus;
   if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response);

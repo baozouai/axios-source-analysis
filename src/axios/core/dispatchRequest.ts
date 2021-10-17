@@ -5,11 +5,12 @@ import transformData from './transformData';
 import isCancel from '../cancel/isCancel';
 import defaults from '../defaults';
 import Cancel from '../cancel/Cancel';
+import { AxiosRequestConfig } from '../type';
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
  */
-function throwIfCancellationRequested(config) {
+function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
   if (config.cancelToken) {
     config.cancelToken.throwIfRequested();
   }
@@ -25,7 +26,7 @@ function throwIfCancellationRequested(config) {
  * @param {object} config The config that is to be used for the request
  * @returns {Promise} The Promise to be fulfilled
  */
- export default  function dispatchRequest(config) {
+ export default  function dispatchRequest<T>(config: AxiosRequestConfig<T>) {
   throwIfCancellationRequested(config);
 
   // Ensure headers exist
@@ -36,26 +37,26 @@ function throwIfCancellationRequested(config) {
     config,
     config.data,
     config.headers,
-    config.transformRequest
+    config.transformRequest!
   );
 
   // Flatten headers
   config.headers = merge(
     config.headers.common || {},
-    config.headers[config.method] || {},
+    config.headers[config.method!] || {},
     config.headers
   );
 
   forEach(
     ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
     function cleanHeaderConfig(method: string) {
-      delete config.headers[method];
+      delete config.headers![method];
     }
   );
 
   var adapter = config.adapter || defaults.adapter;
 
-  return adapter(config).then(function onAdapterResolution(response) {
+  return adapter!(config).then(function onAdapterResolution(response) {
     throwIfCancellationRequested(config);
 
     // Transform response data
@@ -63,7 +64,7 @@ function throwIfCancellationRequested(config) {
       config,
       response.data,
       response.headers,
-      config.transformResponse
+      config.transformResponse!
     );
     return response;
   }, function onAdapterRejection(reason) {
@@ -76,7 +77,7 @@ function throwIfCancellationRequested(config) {
           config,
           reason.response.data,
           reason.response.headers,
-          config.transformResponse
+          config.transformResponse!
         );
       }
     }

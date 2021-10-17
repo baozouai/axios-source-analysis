@@ -15,6 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "noImplicitThis": false,
     "paths": {
       "axios": ["./src/axios"],
       "@/examples/*": ["./src/examples/*"]

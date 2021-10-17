@@ -40,7 +40,7 @@ function setProxy(options: any, proxy: AxiosProxyConfig, location: string) {
   }
 
   // If a proxy is used, any redirects must also pass through the proxy
-  options.beforeRedirect = function beforeRedirect(redirection) {
+  options.beforeRedirect = function beforeRedirect(redirection: any) {
     redirection.headers.host = redirection.host;
     setProxy(redirection, proxy, redirection.href);
   };
@@ -67,7 +67,7 @@ export default  function httpAdapter(config: AxiosRequestConfig) {
       rejectPromise(value);
     };
     let data = config.data;
-    const headers = config.headers;
+    const headers = config.headers!;
     const headerNames: Record<string, string> = {};
 
     Object.keys(headers as object).forEach(function storeLowerName(name) {
@@ -167,7 +167,7 @@ export default  function httpAdapter(config: AxiosRequestConfig) {
         let shouldProxy = true;
 
         if (noProxyEnv) {
-          var noProxy = noProxyEnv.split(',').map(function trim(s) {
+          const noProxy = noProxyEnv.split(',').map(function trim(s) {
             return s.trim();
           });
 
@@ -308,7 +308,7 @@ export default  function httpAdapter(config: AxiosRequestConfig) {
     });
 
     // Handle errors
-    req.on('error', function handleRequestError(err) {
+    req.on('error', function handleRequestError(err: Error & {code: string}) {
       if (req.aborted && err.code !== 'ERR_FR_TOO_MANY_REDIRECTS') return;
       reject(enhanceError(err, config, null, req));
     });

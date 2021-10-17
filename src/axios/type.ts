@@ -165,7 +165,7 @@ export interface CancelTokenSource {
 }
 export interface InterceptorConfig<V> {
   synchronous?: boolean;
-  runWhen?: (config: V) => boolean;
+  runWhen?: ((config: V) => boolean) | null ;
 }
 
 export type FulfilledFn<T = any> = (val: T)=> T | Promise<T>

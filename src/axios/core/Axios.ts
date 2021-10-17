@@ -79,7 +79,7 @@ class Axios {
         promise = promise.then(chain.shift(), chain.shift());
       }
 
-      return promise;
+      return promise as Promise<R>;
     }
 
 
@@ -105,7 +105,7 @@ class Axios {
       promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
     }
 
-    return promise;
+    return promise as unknown as Promise<R>;
   };
 
   getUri(config: AxiosRequestConfig): string {

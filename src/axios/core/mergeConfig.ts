@@ -1,6 +1,5 @@
 'use strict';
-
-import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
+import { isPlainObject, merge, isArray, isUndefined, forEach } from '../utils';
 
 /**
  * Config-specific merge-function which creates a new config-object
@@ -10,12 +9,10 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
  * @param {Object} config2
  * @returns {Object} New object resulting from merging config2 to config1
  */
- export default  function mergeConfig(config1, config2) {
-  // eslint-disable-next-line no-param-reassign
-  config2 = config2 || {};
-  var config = {};
+export default function mergeConfig(config1: Record<string, any>, config2: Record<string, any> = {}) {
+  const config: Record<string, any> = {};
 
-  function getMergedValue(target, source) {
+  function getMergedValue(target?: any, source?: any) {
     if (isPlainObject(target) && isPlainObject(source)) {
       return merge(target, source);
     } else if (isPlainObject(source)) {
@@ -26,8 +23,7 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
     return source;
   }
 
-  // eslint-disable-next-line consistent-return
-  function mergeDeepProperties(prop) {
+  function mergeDeepProperties(prop: string) {
     if (!isUndefined(config2[prop])) {
       return getMergedValue(config1[prop], config2[prop]);
     } else if (!isUndefined(config1[prop])) {
@@ -35,15 +31,13 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
     }
   }
 
-  // eslint-disable-next-line consistent-return
-  function valueFromConfig2(prop) {
+  function valueFromConfig2(prop: string) {
     if (!isUndefined(config2[prop])) {
       return getMergedValue(undefined, config2[prop]);
     }
   }
 
-  // eslint-disable-next-line consistent-return
-  function defaultToConfig2(prop) {
+  function defaultToConfig2(prop: string) {
     if (!isUndefined(config2[prop])) {
       return getMergedValue(undefined, config2[prop]);
     } else if (!isUndefined(config1[prop])) {
@@ -51,8 +45,7 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
     }
   }
 
-  // eslint-disable-next-line consistent-return
-  function mergeDirectKeys(prop) {
+  function mergeDirectKeys(prop: string) {
     if (prop in config2) {
       return getMergedValue(config1[prop], config2[prop]);
     } else if (prop in config1) {
@@ -60,7 +53,7 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
     }
   }
 
-  var mergeMap = {
+  const mergeMap = {
     'url': valueFromConfig2,
     'method': valueFromConfig2,
     'data': valueFromConfig2,
@@ -89,8 +82,8 @@ import {isPlainObject,merge,isArray, isUndefined, forEach} from '../utils';
     'validateStatus': mergeDirectKeys
   };
 
-  forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
-    var merge = mergeMap[prop] || mergeDeepProperties;
+  forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop: string) {
+    var merge = mergeMap[prop as keyof typeof mergeMap] || mergeDeepProperties;
     var configValue = merge(prop);
     (isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
   });

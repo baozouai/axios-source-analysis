@@ -32,7 +32,7 @@ export default function buildURL(url = '', params?: any, paramsSerializer?: (par
   } else {
     const parts: string[] = [];
 
-    forEach(params, function serialize(val: any, key: string) {
+    forEach(params, function serialize(val, key) {
       if (val === null || typeof val === 'undefined') {
         return;
       }

@@ -1,5 +1,5 @@
 'use strict';
-import { AxiosRequestConfig } from "./type";
+import { AxiosRequestConfig, AxiosRequestHeaders } from "./type";
 import { isUndefined, isString, isObject, trim, isFormData, isArrayBuffer, isBuffer, isStream, isFile, isBlob, isArrayBufferView, isURLSearchParams, forEach, merge } from './utils';
 import normalizeHeaderName from './helpers/normalizeHeaderName';
 import enhanceError from './core/enhanceError';
@@ -9,14 +9,14 @@ var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
 
-function setContentTypeIfUnset(headers, value) {
+function setContentTypeIfUnset(headers?: AxiosRequestHeaders, value?: any) {
   if (!isUndefined(headers) && isUndefined(headers['Content-Type'])) {
     headers['Content-Type'] = value;
   }
 }
 
 function getDefaultAdapter() {
-  var adapter;
+  let adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
     adapter = xhr;
@@ -27,12 +27,12 @@ function getDefaultAdapter() {
   return adapter;
 }
 
-function stringifySafely(rawValue, parser?, encoder?) {
+function stringifySafely(rawValue: any, parser?: (val: string) => any, encoder?:(val: any) => string) {
   if (isString(rawValue)) {
     try {
       (parser || JSON.parse)(rawValue);
       return trim(rawValue);
-    } catch (e) {
+    } catch (e: any) {
       if (e.name !== 'SyntaxError') {
         throw e;
       }
@@ -48,12 +48,12 @@ const defaults: AxiosRequestConfig = {
     forcedJSONParsing: true,
     clarifyTimeoutError: false
   },
-
+  // @ts-ignore
   adapter: getDefaultAdapter(),
 
   transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Accept');
-    normalizeHeaderName(headers, 'Content-Type');
+    normalizeHeaderName(headers!, 'Accept');
+    normalizeHeaderName(headers!, 'Content-Type');
 
     if (isFormData(data) ||
       isArrayBuffer(data) ||
@@ -87,7 +87,7 @@ const defaults: AxiosRequestConfig = {
     if (strictJSONParsing || (forcedJSONParsing && isString(data) && data.length)) {
       try {
         return JSON.parse(data);
-      } catch (e) {
+      } catch (e: any) {
         if (strictJSONParsing) {
           if (e.name === 'SyntaxError') {
             throw enhanceError(e, this, 'E_JSON_PARSE');
@@ -124,11 +124,11 @@ const defaults: AxiosRequestConfig = {
 };
 
 forEach(['delete', 'get', 'head'], function forEachMethodNoData(method: 'delete'| 'get'| 'head') {
-  defaults.headers[method as unknown as string] = {};
+  defaults.headers![method as unknown as string] = {};
 });
 
 forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = merge(DEFAULT_CONTENT_TYPE);
+  defaults.headers![method] = merge(DEFAULT_CONTENT_TYPE);
 });
 
 export default defaults;

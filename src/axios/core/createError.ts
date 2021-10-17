@@ -13,6 +13,6 @@ import { AxiosRequestConfig, AxiosResponse} from '../type'
  * @returns {Error} The created error.
  */
  export default  function createError(message: string, config: AxiosRequestConfig, code?: string | null, request?: any, response?: AxiosResponse) {
-  var error = new Error(message);
+  const error = new Error(message);
   return enhanceError(error, config, code, request, response);
 };

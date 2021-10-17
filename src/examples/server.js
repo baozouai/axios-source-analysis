@@ -1,18 +1,18 @@
-var fs = require('fs');
-var path = require('path');
-var http = require('http');
-var argv = require('minimist')(process.argv.slice(2));
-var server;
-var dirs;
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const argv = require('minimist')(process.argv.slice(2));
+let server;
+let dirs;
 
 function listDirs(root) {
-  var files = fs.readdirSync(root);
-  var dirs = [];
+  const files = fs.readdirSync(root);
+  const dirs = [];
 
-  for (var i = 0, l = files.length; i < l; i++) {
-    var file = files[i];
+  for (let i = 0, l = files.length; i < l; i++) {
+    const file = files[i];
     if (file[0] !== '.') {
-      var stat = fs.statSync(path.join(root, file));
+      const stat = fs.statSync(path.join(root, file));
       if (stat.isDirectory()) {
         dirs.push(file);
       }
@@ -23,8 +23,8 @@ function listDirs(root) {
 }
 
 function getIndexTemplate() {
-  var links = dirs.map(function (dir) {
-    var url = '/' + dir;
+  const links = dirs.map(function (dir) {
+    const url = '/' + dir;
     return '<li onclick="document.location=\'' + url + '\'"><a href="' + url + '">' + url + '</a></li>';
   });
 
@@ -74,7 +74,7 @@ function pipeFileToResponse(res, file, type) {
 dirs = listDirs(__dirname);
 
 server = http.createServer(function (req, res) {
-  var url = req.url;
+  const url = req.url;
 
   // Process axios itself
   if (/axios\.min\.js$/.test(url)) {
@@ -106,7 +106,7 @@ server = http.createServer(function (req, res) {
   }
 
   // Format request /get -> /get/index.html
-  var parts = url.split('/');
+  const parts = url.split('/');
   if (dirs.indexOf(parts[parts.length - 1]) > -1) {
     url += '/index.html';
   }

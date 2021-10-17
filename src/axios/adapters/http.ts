@@ -19,7 +19,7 @@ import Cancel from '../cancel/Cancel';
 import { AxiosRequestConfig, AxiosProxyConfig } from '../type'
 
 const VERSION = data.version
-var isHttps = /https:?/;
+const isHttps = /https:?/;
 
 /**
  *
@@ -35,7 +35,7 @@ function setProxy(options: any, proxy: AxiosProxyConfig, location: string) {
 
   // Basic proxy authorization
   if (proxy.auth) {
-    var base64 = Buffer.from(proxy.auth.username + ':' + proxy.auth.password, 'utf8').toString('base64');
+    const base64 = Buffer.from(proxy.auth.username + ':' + proxy.auth.password, 'utf8').toString('base64');
     options.headers['Proxy-Authorization'] = 'Basic ' + base64;
   }
 
@@ -195,7 +195,7 @@ export default  function httpAdapter(config: AxiosRequestConfig) {
           };
 
           if (parsedProxyUrl.auth) {
-            var proxyUrlAuth = parsedProxyUrl.auth.split(':');
+            const proxyUrlAuth = parsedProxyUrl.auth.split(':');
             proxy.auth = {
               username: proxyUrlAuth[0],
               password: proxyUrlAuth[1]
@@ -317,7 +317,7 @@ export default  function httpAdapter(config: AxiosRequestConfig) {
     if (config.timeout) {
       // This is forcing a int timeout to avoid problems if the `req` interface doesn't handle other types.
       // @ts-ignore
-      var timeout = parseInt(config.timeout, 10);
+      const timeout = parseInt(config.timeout, 10);
 
       if (isNaN(timeout)) {
         reject(createError(

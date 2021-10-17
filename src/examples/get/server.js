@@ -1,4 +1,4 @@
-var people = [
+const people = [
   {
     "name": "Matt Zabriskie",
     "github": "mzabriskie",

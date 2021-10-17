@@ -52,7 +52,7 @@ export default (
     * @returns {boolean} True if URL shares the same origin, otherwise false
     */
       return function isURLSameOrigin(requestURL: string) {
-        var parsed = (isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+        const parsed = (isString(requestURL)) ? resolveURL(requestURL) : requestURL;
         return (parsed.protocol === originURL.protocol &&
             parsed.host === originURL.host);
       };

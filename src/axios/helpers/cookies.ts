@@ -9,7 +9,7 @@ export default (
     (function standardBrowserEnv() {
       return {
         write: function write(name: string, value: string | number | boolean, expires?: number, path?: string, domain?: string, secure?: boolean) {
-          var cookie = [];
+          const cookie: string[] = [];
           cookie.push(name + '=' + encodeURIComponent(value));
 
           if (isNumber(expires)) {
@@ -33,7 +33,7 @@ export default (
         },
 
         read: function read(name: string) {
-          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+          const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
           return (match ? decodeURIComponent(match[3]) : null);
         },
 

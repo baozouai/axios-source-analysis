@@ -18,7 +18,7 @@ const validators = {
  * @param {string?} message - some message with additional info
  * @returns {function}
  */
-  transitional(validator, version?: string, message?: string) {
+  transitional(validator: ((value: any, opt?: any, opts?: any)=> boolean) | boolean, version?: string, message?: string) {
     function formatMessage(opt: string, desc: string) {
       return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
     }
@@ -39,7 +39,7 @@ const validators = {
         );
       }
   
-      return validator ? validator(value, opt, opts) : true;
+      return validator ? (validator as Function)(value, opt, opts) : true;
     };
   },
   object(thing: string) {
@@ -73,18 +73,18 @@ const validators = {
  * @param {boolean?} allowUnknown
  */
 
-function assertOptions(options, schema, allowUnknown?: boolean) {
+function assertOptions(options: any, schema:Record<string,any>, allowUnknown?: boolean) {
   if (typeof options !== 'object') {
     throw new TypeError('options must be an object');
   }
-  var keys = Object.keys(options);
-  var i = keys.length;
+  const keys = Object.keys(options);
+  let i = keys.length;
   while (i-- > 0) {
-    var opt = keys[i];
-    var validator = schema[opt];
+    const opt = keys[i];
+    const validator = schema[opt];
     if (validator) {
-      var value = options[opt];
-      var result = value === undefined || validator(value, opt, options);
+      const value = options[opt];
+      const result = value === undefined || validator(value, opt, options);
       if (result !== true) {
         throw new TypeError('option ' + opt + ' must be ' + result);
       }

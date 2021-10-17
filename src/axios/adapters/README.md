@@ -5,7 +5,7 @@ The modules under `adapters/` are modules that handle dispatching a request and 
 ## Example
 
 ```js
-var settle = require('./../core/settle');
+const settle = require('./../core/settle');
 
 module.exports = function myAdapter(config) {
   // At this point:
@@ -18,7 +18,7 @@ module.exports = function myAdapter(config) {
 
   return new Promise(function(resolve, reject) {
   
-    var response = {
+    const response = {
       data: responseData,
       status: request.status,
       statusText: request.statusText,

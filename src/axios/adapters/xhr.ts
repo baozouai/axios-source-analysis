@@ -11,15 +11,22 @@ import createError from '../core/createError';
 import defaults from '../defaults';
 import Cancel from '../cancel/Cancel';
 import { AxiosRequestConfig, CancelListener } from '../type';
-
+/**
+ * @description 对应浏览器的请求
+ * @param config 请求头配置
+ */
 export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
+    // 获取请求的 data
     let requestData: D | null | undefined = config.data;
     const requestHeaders = config.headers!;
     const responseType = config.responseType;
     let onCanceled: CancelListener;
+    /** 取消订阅或移除abort监听器 */
     function done() {
+      // 已经done了，那么就取消掉onCanceled的订阅
       if (config.cancelToken) {
+        // 无论有没有订阅，都取消订阅
         config.cancelToken.unsubscribe(onCanceled);
       }
 
@@ -28,7 +35,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         config.signal.removeEventListener('abort', onCanceled);
       }
     }
-
+    // 如果请求体是FormData，那么不需要Content-Type,浏览器会自动设置
     if (isFormData(requestData)) {
       delete requestHeaders['Content-Type']; // Let the browser set it
     }
@@ -36,24 +43,32 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     let request:XMLHttpRequest  = new XMLHttpRequest();
 
     // HTTP basic authentication
+    // 配置验证
     if (config.auth) {
       const username = config.auth.username || '';
       const password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
       requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
     }
-
+    // 如果有baseURL,那么合并成fullPath
     const fullPath = buildFullPath(config.baseURL, config.url);
+    // method要大写，将params序列话拼接到fullPath上，如params={a: 1, b: 2}, 
+    // fullPath = 'https://baozouai.com/post', 那么buildURL后为https://baozouai.com/post?a=1&b=2
+    // 如果有配置paramsSerializer，那么可以自定义params序列化
     request.open(config.method!.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
     // Set the request timeout in MS
+    // 配置请求超时时间
     request.timeout = config.timeout!;
-
+    /** 请求成功响应  */
     function onloadend() {
       if (!request) {
         return;
       }
+      // 预处理响应
       // Prepare the response
+      // 获取响应头
       const responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      // 如果没有设置响应类型或者设置了响应类型为text或json，那么响应数据取responseText，否则取response
       const responseData = !responseType || responseType === 'text' ||  responseType === 'json' ?
         request.responseText : request.response;
       const response = {
@@ -78,7 +93,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
       // @ts-ignore
       request = null;
     }
-
+    // 一些浏览器支持onloadend,一些支持onreadystatechange，所以这里分开判断下
     if ('onloadend' in request) {
       // Use onloadend if available
       request.onloadend = onloadend;
@@ -101,7 +116,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         setTimeout(onloadend);
       };
     }
-
+    // 处理浏览器取消请求的回调，不是手动取消
     // Handle browser request cancellation (as opposed to a manual cancellation)
     request.onabort = function handleAbort() {
       if (!request) {
@@ -112,9 +127,10 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
 
       // Clean up request
       // @ts-ignore
+      // 已经取消了，那么将request置空
       request = null;
     };
-
+    // 网络请求失败的回调
     // Handle low level network errors
     request.onerror = function handleError() {
       // Real errors are hidden from us by the browser
@@ -125,7 +141,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
       // @ts-ignore
       request = null;
     };
-
+    // 超时回调
     // Handle timeout
     request.ontimeout = function handleTimeout() {
       let timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
@@ -149,6 +165,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     // Specifically not if we're in a web worker, or react-native.
     if (isStandardBrowserEnv()) {
       // Add xsrf header
+      // 配置跨站请求伪造(xsrf)头
       const xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
         cookies.read(config.xsrfCookieName) :
         undefined;
@@ -157,14 +174,17 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         requestHeaders[config.xsrfHeaderName!] = xsrfValue;
       }
     }
-
+    // 给request增加headers
     // Add headers to the request
     if ('setRequestHeader' in request) {
       forEach(requestHeaders, function setRequestHeader(val, key) {
+        // 这里针对Content-Type
         if (typeof requestData === 'undefined' && (key as string).toLowerCase() === 'content-type') {
           // Remove Content-Type if data is undefined
+          // 如果没有请求体，且请求头有Content-Type, 那么删除掉，因为没有请求头，不需要该请求头
           delete requestHeaders[key];
         } else {
+          // 其他的加上对应的请求头，当然如果有请求头，且请求头有Content-Type，那么请求要加上
           // Otherwise add header to the request
           request.setRequestHeader(key as string, val);
         }
@@ -172,26 +192,30 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     }
 
     // Add withCredentials to request if needed
+    // withCredentials: 跨域请求要不要携带cookie
     if (!isUndefined(config.withCredentials)) {
       request.withCredentials = !!config.withCredentials;
     }
 
     // Add responseType to request if needed
+    // 如果有响应类型且不为json，那么加上
     if (responseType && responseType !== 'json') {
       // @ts-ignore
       request.responseType = config.responseType;
     }
 
     // Handle progress if needed
+    // 如果配置了downLoad的监听，那么加上
     if (typeof config.onDownloadProgress === 'function') {
       request.addEventListener('progress', config.onDownloadProgress);
     }
 
     // Not all browsers support upload events
+    // 如果配置了上次的监听，那么加上，但不是所有的浏览器都支持
     if (typeof config.onUploadProgress === 'function' && request.upload) {
       request.upload.addEventListener('progress', config.onUploadProgress);
     }
-
+    // 如果配置了cancelToken或signal，那么加上对应的onCanceled订阅或添加abort监听器
     if (config.cancelToken || config.signal) {
       // Handle cancellation
       // @ts-ignore
@@ -200,18 +224,25 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
           return;
         }
         reject(!cancel || (cancel && cancel.type) ? new Cancel('canceled') : cancel);
+        /**
+         * 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。
+         * 当一个请求被终止，它的  readyState 将被置为 XMLHttpRequest.UNSENT (0)，
+         * 并且请求的 status 置为 0
+         * 
+         * https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest/abort
+         */
         request.abort();
         // @ts-ignore
         request = null;
       };
 
-      config.cancelToken && config.cancelToken.subscribe(onCanceled);
+      config.cancelToken?.subscribe(onCanceled);
       if (config.signal) {
         // @ts-ignore
         config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }
-
+    // 如果没有请求头，那么设为null
     if (!requestData) {
       requestData = null;
     }

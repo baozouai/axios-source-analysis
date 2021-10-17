@@ -58,8 +58,11 @@ export type ResponseType =
   | 'stream'
 
 export interface TransitionalOptions{
+  /** 是否忽略JSON.parse(response.body)的错误 */
   silentJSONParsing: boolean;
+  /** 当responseType!== json时将是否response转化为json */
   forcedJSONParsing: boolean;
+  /** 当请求超时是否返回ETIMEDOUT而不是ECONNABORTED */
   clarifyTimeoutError: boolean;
 }
 export type responseEncoding =

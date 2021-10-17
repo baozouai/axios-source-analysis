@@ -38,6 +38,8 @@ export default function buildURL(url = '', params?: any, paramsSerializer?: (par
       }
 
       if (isArray(val)) {
+        // 设置的前面要先加'[]'，比如这里的key是links，val是['http://www.baidu.com','http://www.google.cn']
+        // 如http://localhost:8080/post?links[]=http://www.baidu.com&links[]=http://www.google.cn
         key = key + '[]';
       } else {
         val = [val];
@@ -57,11 +59,13 @@ export default function buildURL(url = '', params?: any, paramsSerializer?: (par
   }
 
   if (serializedParams) {
+    // serializedParams有值，说明有params
     const hashmarkIndex = url.indexOf('#');
     if (hashmarkIndex !== -1) {
+      // 如果url包含'#',那么取开始到'#'前一个
       url = url.slice(0, hashmarkIndex);
     }
-
+    // 如果url包含?，说明url本身已有paramsSerial,那么直接用'&'拼接上新的serializedParams，否则要先加上?
     url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
   }
 

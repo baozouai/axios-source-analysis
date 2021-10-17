@@ -3,6 +3,7 @@ import logo from './logo.svg'
 import './App.css'
 import All from '@/examples/all'
 import Amd from './examples/amd'
+import Post from './examples/post'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -43,4 +44,4 @@ function App() {
   )
 }
 
-export default All
+export default Post

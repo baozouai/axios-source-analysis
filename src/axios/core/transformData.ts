@@ -14,8 +14,8 @@ import {AxiosRequestHeaders, AxiosResponseHeaders} from '../type'
  export default  function transformData(data: any, headers: AxiosRequestHeaders | AxiosResponseHeaders, fns: Function | Function[]) {
   // @ts-ignore
   const context = this || defaults;
-  /*eslint no-param-reassign:0*/
-  forEach(fns, function transform(fn) {
+
+  forEach(fns, function transform(fn: (data: any, headers: AxiosRequestHeaders | AxiosResponseHeaders) => any) {
     data = fn.call(context, data, headers);
   });
 

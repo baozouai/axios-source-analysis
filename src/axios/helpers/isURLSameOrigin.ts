@@ -45,7 +45,8 @@ export default (
 
       const originURL = resolveURL(window.location.href);
 
-      /**
+  /**
+    * requestURL是否和当前网址同源
     * Determine if a URL shares the same origin as the current location
     *
     * @param {String} requestURL The URL to test

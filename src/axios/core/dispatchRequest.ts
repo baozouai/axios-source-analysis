@@ -27,12 +27,15 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
  * @returns {Promise} The Promise to be fulfilled
  */
  export default  function dispatchRequest<T>(config: AxiosRequestConfig<T>) {
+  // 请求前判断下是否需要throw 一个cancel
   throwIfCancellationRequested(config);
 
   // Ensure headers exist
+  // 确保headers存在
   config.headers = config.headers || {};
 
   // Transform request data
+  // 转换request data
   config.data = transformData.call(
     config,
     config.data,
@@ -41,12 +44,13 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
   );
 
   // Flatten headers
+  // 可简单理解为config.headers = {...config.headers.common, ...config.headers[config.method], ...config.header}
   config.headers = merge(
     config.headers.common || {},
     config.headers[config.method!] || {},
     config.headers
   );
-
+  // 上面已经拿到对应method的header，那么删除掉headers中对应的的key
   forEach(
     ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
     function cleanHeaderConfig(method: string) {
@@ -54,12 +58,14 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
     }
   );
 
-  const adapter = config.adapter || defaults.adapter;
+  const adapter = (config.adapter || defaults.adapter)!;
 
-  return adapter!(config).then(function onAdapterResolution(response) {
+  return adapter(config).then(function onAdapterResolution(response) {
+    // 响应后也判断下是否需要throw 一个cancel
     throwIfCancellationRequested(config);
 
     // Transform response data
+    // 转换响应数据
     response.data = transformData.call(
       config,
       response.data,
@@ -68,6 +74,7 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
     );
     return response;
   }, function onAdapterRejection(reason) {
+    // 请求失败的回调
     if (!isCancel(reason)) {
       throwIfCancellationRequested(config);
 

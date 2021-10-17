@@ -54,7 +54,7 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
     }
   );
 
-  var adapter = config.adapter || defaults.adapter;
+  const adapter = config.adapter || defaults.adapter;
 
   return adapter!(config).then(function onAdapterResolution(response) {
     throwIfCancellationRequested(config);

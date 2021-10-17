@@ -57,7 +57,7 @@ export default function buildURL(url = '', params?: any, paramsSerializer?: (par
   }
 
   if (serializedParams) {
-    var hashmarkIndex = url.indexOf('#');
+    const hashmarkIndex = url.indexOf('#');
     if (hashmarkIndex !== -1) {
       url = url.slice(0, hashmarkIndex);
     }

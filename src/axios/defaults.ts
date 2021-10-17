@@ -5,7 +5,7 @@ import normalizeHeaderName from './helpers/normalizeHeaderName';
 import enhanceError from './core/enhanceError';
 import xhr from './adapters/xhr'
 import AdaptersHttp from './adapters/http'
-var DEFAULT_CONTENT_TYPE = {
+const DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
 
@@ -79,10 +79,10 @@ const defaults: AxiosRequestConfig = {
   }],
 
   transformResponse: [function transformResponse(data) {
-    var transitional = this.transitional || defaults.transitional;
-    var silentJSONParsing = transitional && transitional.silentJSONParsing;
-    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
+    const transitional = this.transitional || defaults.transitional;
+    const silentJSONParsing = transitional && transitional.silentJSONParsing;
+    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    const strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
 
     if (strictJSONParsing || (forcedJSONParsing && isString(data) && data.length)) {
       try {

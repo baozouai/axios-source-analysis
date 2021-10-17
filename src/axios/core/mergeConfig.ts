@@ -83,8 +83,8 @@ export default function mergeConfig(config1: Record<string, any>, config2: Recor
   };
 
   forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop: string) {
-    var merge = mergeMap[prop as keyof typeof mergeMap] || mergeDeepProperties;
-    var configValue = merge(prop);
+    const merge = mergeMap[prop as keyof typeof mergeMap] || mergeDeepProperties;
+    const configValue = merge(prop);
     (isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
   });
   return config;

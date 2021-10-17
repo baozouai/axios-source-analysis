@@ -65,7 +65,7 @@ export function isFormData(val: any): val is FormData {
  * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
  */
 export function isArrayBufferView(val: any): val is ArrayBufferView {
-  var result;
+  let result;
   if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
     result = ArrayBuffer.isView(val);
   } else {
@@ -115,7 +115,7 @@ export function isPlainObject(val: object): boolean {
     return false;
   }
 
-  var prototype = Object.getPrototypeOf(val);
+  const prototype = Object.getPrototypeOf(val);
   return prototype === null || prototype === Object.prototype;
 }
 
@@ -266,7 +266,7 @@ export function forEach<T = any>(obj: any | T[], fn: (val: any, key: string | nu
  * Example:
  *
  * ```js
- * var result = merge({foo: 123}, {foo: 456});
+ * const result = merge({foo: 123}, {foo: 456});
  * console.log(result.foo); // outputs 456
  * ```
  *

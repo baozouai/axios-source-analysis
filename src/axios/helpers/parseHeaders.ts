@@ -4,7 +4,7 @@ import {forEach, trim} from './../utils';
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
-var ignoreDuplicateOf = [
+const ignoreDuplicateOf = [
   'age', 'authorization', 'content-length', 'content-type', 'etag',
   'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
   'last-modified', 'location', 'max-forwards', 'proxy-authorization',
@@ -24,11 +24,11 @@ var ignoreDuplicateOf = [
  * @param {String} headers Headers needing to be parsed
  * @returns {Object} Headers parsed into an object
  */
- export default function parseHeaders(headers) {
-  var parsed = {};
-  var key;
-  var val;
-  var i;
+ export default function parseHeaders(headers?: string) {
+  const parsed: Record<string, any> = {};
+  let key;
+  let val;
+  let i;
 
   if (!headers) { return parsed; }
 

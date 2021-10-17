@@ -7,7 +7,7 @@
  *
  *  ```js
  *  function f(x, y, z) {}
- *  var args = [1, 2, 3];
+ *  const args = [1, 2, 3];
  *  f.apply(null, args);
  *  ```
  *
@@ -21,7 +21,7 @@
  * @returns {Function}
  */
  export default  function spread(callback: Function) {
-  return function wrap(arr) {
+  return function wrap(arr: any[]) {
     return callback.apply(null, arr);
   };
 };

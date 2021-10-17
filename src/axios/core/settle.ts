@@ -11,7 +11,7 @@ import createError from './createError';
  * @param {object} response The response.
  */
  export default function settle(resolve: (value: any) => any, reject: (reason: any) => any, response: AxiosResponse) {
-  var validateStatus = response.config.validateStatus;
+  const validateStatus = response.config.validateStatus;
   if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response);
   } else {

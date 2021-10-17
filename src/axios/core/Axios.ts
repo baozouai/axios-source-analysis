@@ -69,7 +69,7 @@ class Axios {
     let promise;
 
     if (!synchronousRequestInterceptors) {
-      var chain = [dispatchRequest, undefined];
+      let chain = [dispatchRequest, undefined];
 
       Array.prototype.unshift.apply(chain, requestInterceptorChain);
       chain = chain.concat(responseInterceptorChain);

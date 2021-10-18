@@ -27,7 +27,12 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
  * @returns {Promise} The Promise to be fulfilled
  */
  export default  function dispatchRequest<T>(config: AxiosRequestConfig<T>) {
-  // 请求前判断下是否需要throw 一个cancel
+  /**
+   * 请求前判断下是否需要throw 一个cancel
+   * 
+   * 比如我再请求前就通过CancelToken.source.token.reason = new axios.Cancel('xxx')或signal.abort()
+   * 那么这里就捕捉到了
+   */
   throwIfCancellationRequested(config);
 
   // Ensure headers exist
@@ -61,7 +66,15 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
   const adapter = (config.adapter || defaults.adapter)!;
 
   return adapter(config).then(function onAdapterResolution(response) {
-    // 响应后也判断下是否需要throw 一个cancel
+    /**
+     * 请求成功响应，如果这时候检测到config.cancelToken或config.signal满足条件，那么也会throw
+     * @example
+     * const source = axios.CancelToken.source()
+     * axios.get<State>('https://api.github.com/users/mzabriskie', {cancelToken: source.token,})
+     * source.token.reason = new axios.Cancel('取消请求xxx')
+     * 
+     * 那么响应后这里会满足throw的条件
+     */
     throwIfCancellationRequested(config);
 
     // Transform response data
@@ -88,7 +101,17 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
         );
       }
     }
-
+    /** 
+     * 到了这里就是调用source.cancel了 
+     * 
+     * @example
+     * const CancelToken = axios.CancelToken
+     * const source = CancelToken.source()
+     * 
+     * axios.get<State>('https://api.github.com/users/mzabriskie', {cancelToken: source.token,})
+     * 
+     * source.cancel('取消请求')
+    */
     return Promise.reject(reason);
   });
 };

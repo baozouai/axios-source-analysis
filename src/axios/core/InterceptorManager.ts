@@ -41,7 +41,7 @@ export class InterceptorManager<V> {
  *
  * @param {Function} fn The function to call for each interceptor
  */
-  forEach(fn: (interceptor: Interceptor<V>) => any) {
+  forEach(fn: (interceptor: Interceptor<V>) => void) {
     forEach(this.handlers, function forEachHandler(h) {
       if (h !== null) {
         fn(h);

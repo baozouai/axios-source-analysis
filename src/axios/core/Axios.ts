@@ -17,10 +17,14 @@ class Axios {
   };
   defaults: AxiosRequestConfig = {}
 
-  constructor(config: AxiosRequestConfig = {}) {
+  constructor(config: AxiosRequestConfig) {
     this.defaults = config;
   }
-
+  /**
+   * @example
+   * T: response.data类型
+   * D: request config.data类型
+   */  
   request<T = unknown, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D> | string): Promise<R> {
     if (typeof config === 'string') {
       // 如果是config是string，说明是url，那么cofig尝试获取第二个参数，如果没有给个默认空对象

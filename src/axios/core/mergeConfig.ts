@@ -2,6 +2,8 @@
 import { isPlainObject, merge, isArray, isUndefined, forEach } from '../utils';
 
 /**
+ * @description: merge后生成的新config的任何修改不会影响传入的config
+ * 
  * Config-specific merge-function which creates a new config-object
  * by merging two configuration objects together.
  *

@@ -1,8 +1,8 @@
 'use strict';
 
-import {forEach} from './../utils';
+import { forEach } from './../utils';
 import defaults from './../defaults';
-import {AxiosRequestHeaders, AxiosResponseHeaders} from '../type'
+import { AxiosRequestHeaders, AxiosResponseHeaders } from '../type'
 /**
  * Transform the data for a request or a response
  *
@@ -11,7 +11,7 @@ import {AxiosRequestHeaders, AxiosResponseHeaders} from '../type'
  * @param {Array|Function} fns A single function or Array of functions
  * @returns {*} The resulting transformed data
  */
- export default  function transformData(data: any, headers: AxiosRequestHeaders | AxiosResponseHeaders, fns: Function | Function[]) {
+export default function transformData(data: any, headers: AxiosRequestHeaders | AxiosResponseHeaders, fns: Function | Function[]) {
   // @ts-ignore
   const context = this || defaults;
 

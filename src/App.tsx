@@ -5,6 +5,7 @@ import All from '@/examples/all'
 import Amd from './examples/amd'
 import Post from './examples/post'
 import TransformResponse from './examples/transform-response'
+import CancelRequest from './examples/cancel-request'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -45,4 +46,4 @@ function App() {
   )
 }
 
-export default TransformResponse
+export default CancelRequest

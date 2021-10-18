@@ -61,6 +61,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     request.timeout = config.timeout!;
     /** 请求成功响应  */
     function onloadend() {
+      // 请求成功了，但是被取消了，onCanceled里面把request置为null了
       if (!request) {
         return;
       }
@@ -119,6 +120,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     // 处理浏览器取消请求的回调，不是手动取消
     // Handle browser request cancellation (as opposed to a manual cancellation)
     request.onabort = function handleAbort() {
+      // 调用request.abort后这里会监听到，在下面的onCanceled里
       if (!request) {
         return;
       }
@@ -239,6 +241,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
       config.cancelToken?.subscribe(onCanceled);
       if (config.signal) {
         // @ts-ignore
+        // 如果已经aborted了，那么直接执行onCanceled，否则监听signal是否abort，是的话调用回调onCanceled
         config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }

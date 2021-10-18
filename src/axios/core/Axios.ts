@@ -101,7 +101,7 @@ class Axios {
     }
 
     // 到了这里就是同步的拦截器了
-    // 和上面不同，对应请求拦截器，会同步执行，之后dispatchRequest和responseInterceptorChain才会异步处理
+    // 和上面不同，对于请求拦截器，会同步执行，之后dispatchRequest和responseInterceptorChain才会异步处理
     // 生成链式promise
     let newConfig = config;
     while (requestInterceptorChain.length) {

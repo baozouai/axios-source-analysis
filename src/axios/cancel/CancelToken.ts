@@ -8,7 +8,7 @@ import {CancelExecutor, CancelListener, Canceler} from '../type'
  * @class
  * @param {Function} executor The executor function.
  */
-
+type ResolveCancelType = (value: Cancel | PromiseLike<Cancel>) => void
 class CancelToken {
   promise: Promise<Cancel>;
   reason?: Cancel;
@@ -18,7 +18,7 @@ class CancelToken {
       throw new TypeError('executor must be a function.');
     }
   
-    let resolvePromise: any;
+    let resolvePromise: ResolveCancelType;
   
     this.promise = new Promise(function promiseExecutor(resolve) {
       resolvePromise = resolve;
@@ -33,12 +33,13 @@ class CancelToken {
       for (let i = 0; i < token._listeners.length; i++) {
         token._listeners[i](cancel);
       }
+      // 消费完后置空
       token._listeners = null;
     });
   
 
     this.promise.then = function(onfulfilled) {
-      let _resolve: any;
+      let _resolve: ResolveCancelType;
 
       const promise = new Promise<Cancel>(function(resolve) {
         token.subscribe(resolve);
@@ -55,6 +56,7 @@ class CancelToken {
   
     executor(function cancel(message) {
       if (token.reason) {
+        // 下面会把复制token.reason，使用判断到有值，说明已经取消了
         // Cancellation has already been requested
         return;
       }

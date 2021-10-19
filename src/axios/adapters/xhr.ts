@@ -114,6 +114,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         }
         // readystate handler is calling before onerror or ontimeout handlers,
         // so we should call onloadend on the next 'tick'
+        // readyState的调用是在onerror或ontimeout之前，所以这里放到下一个tick中
         setTimeout(onloadend);
       };
     }
@@ -165,6 +166,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     // Add xsrf header
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
+    // 是标准浏览器环境的话，web worker和rn不是
     if (isStandardBrowserEnv()) {
       // Add xsrf header
       // 配置跨站请求伪造(xsrf)头
@@ -186,7 +188,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
           // 如果没有请求体，且请求头有Content-Type, 那么删除掉，因为没有请求头，不需要该请求头
           delete requestHeaders[key];
         } else {
-          // 其他的加上对应的请求头，当然如果有请求头，且请求头有Content-Type，那么请求要加上
+          // 其他的加上对应的请求头，当然如果有请求体，且请求头有Content-Type，那么请求要加上
           // Otherwise add header to the request
           request.setRequestHeader(key as string, val);
         }
@@ -213,7 +215,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     }
 
     // Not all browsers support upload events
-    // 如果配置了上次的监听，那么加上，但不是所有的浏览器都支持
+    // 如果配置了上传的监听，那么加上，但不是所有的浏览器都支持
     if (typeof config.onUploadProgress === 'function' && request.upload) {
       request.upload.addEventListener('progress', config.onUploadProgress);
     }
@@ -232,12 +234,14 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
          * 并且请求的 status 置为 0
          * 
          * https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest/abort
+         * 
+         * 这里调用后会立即触发上面的request.onabort
          */
         request.abort();
         // @ts-ignore
         request = null;
       };
-
+      // 有cancelToken，那么加入订阅
       config.cancelToken?.subscribe(onCanceled);
       if (config.signal) {
         // @ts-ignore
@@ -245,7 +249,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }
-    // 如果没有请求头，那么设为null
+    // 如果没有请求体，那么设为null
     if (!requestData) {
       requestData = null;
     }

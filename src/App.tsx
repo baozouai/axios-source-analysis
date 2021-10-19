@@ -46,4 +46,4 @@ function App() {
   )
 }
 
-export default CancelRequest
+export default Amd

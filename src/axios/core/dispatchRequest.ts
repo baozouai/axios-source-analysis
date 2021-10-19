@@ -30,7 +30,7 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
   /**
    * 请求前判断下是否需要throw 一个cancel
    * 
-   * 比如我再请求前就通过CancelToken.source.token.reason = new axios.Cancel('xxx')或signal.abort()
+   * 比如我在请求前就通过CancelToken.source.token.reason = new axios.Cancel('xxx')或signal.abort()
    * 那么这里就捕捉到了
    */
   throwIfCancellationRequested(config);

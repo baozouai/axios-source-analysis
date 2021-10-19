@@ -397,7 +397,9 @@ export interface CancelTokenSource {
   cancel: Canceler;
 }
 export interface InterceptorConfig<V> {
+  /** 是否是同步拦截器，默认都是异步的 */
   synchronous?: boolean;
+  /** 用于请求拦截器中判断是否放入requestInterceptorChain，返回false不放入 */
   runWhen?: ((config: V) => boolean) | null ;
 }
 

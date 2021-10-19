@@ -24,10 +24,11 @@ export class InterceptorManager<V> {
   }
 
   /**
- * Remove an interceptor from the stack
- *
- * @param {Number} id The ID that was returned by `use`
- */
+   * @description 上面的use会返回对应的index，所以这里可以通过索引eject掉对应的拦截器
+   * Remove an interceptor from the stack
+   *
+   * @param {Number} id The ID that was returned by `use`
+   */
   eject(id: number) {
     if (this.handlers[id]) {
       this.handlers[id] = null;

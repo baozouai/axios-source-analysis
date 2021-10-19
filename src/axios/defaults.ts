@@ -92,7 +92,7 @@ const defaults: AxiosRequestConfig = {
     const transitional = this.transitional || defaults.transitional;
     /** 是否忽略JSON.parse(response.body)的错误 */
     const silentJSONParsing = transitional && transitional.silentJSONParsing;
-    /** 当responseType!== json时将是否response转化为json */
+    /** 当responseType!== json时是否强行将response转化为json */
     const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
     /** 不能忽略JSON.parse(response.body)的错误且respnoseType为json */
     const strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
@@ -102,7 +102,7 @@ const defaults: AxiosRequestConfig = {
         // 那么调用JSON.parse
         return JSON.parse(data);
       } catch (e: any) {
-        // 如果非严格，比如JSON.parse('xxx'),那么会catch到，但不会throw
+        // 如果非严格，但强行转换导致报错了，比如JSON.parse('xxx'),那么会catch到，但不会throw
         if (strictJSONParsing) {
           // 只有严格JSONParsing才会抛出错误
           // 如果是严格解析

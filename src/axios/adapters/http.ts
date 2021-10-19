@@ -6,7 +6,8 @@ import buildFullPath from '../core/buildFullPath';
 import buildURL from './../helpers/buildURL';
 import http from 'http';
 import https from 'https';
-import {http as httpFollow, https as httpsFollow} from 'follow-redirects';
+// 这里先注释掉，follow-redirects里面的Writtable.prototype会报错
+// import {http as httpFollow, https as httpsFollow} from 'follow-redirects';
 
 import url from 'url';
 import zlib from 'zlib';
@@ -45,7 +46,9 @@ function setProxy(options: any, proxy: AxiosProxyConfig, location: string) {
     setProxy(redirection, proxy, redirection.href);
   };
 }
-
+/**
+ * node专属
+ */
 export default  function httpAdapter(config: AxiosRequestConfig) {
   return new Promise((resolvePromise, rejectPromise) => {
     let onCanceled: any;

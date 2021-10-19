@@ -38,6 +38,8 @@ class Axios {
     // 而我们get、post等传入第二个参数cconfig可以覆盖默认的配置
     config = mergeConfig(this.defaults, config);
     // Set config.method
+    // 注意这里把method转换为小写，目的是在dispatchRequest中可以匹配到config.headers![method]对应method的header，
+    // 而真正的请求是要把method转换为大写的，可以在adapters中看到
     if (config.method) {
       // 如果有method，那么转换为小写，如GET => get
       config.method = config.method.toLowerCase() as Method;
@@ -72,7 +74,12 @@ class Axios {
       }
       // 只要有一个是异步的，那么全部就都是异步的
       synchronousRequestInterceptors = !!(synchronousRequestInterceptors && interceptor.synchronous);
-
+      /**
+       * request.use(fulfilled1, rejected1)
+       * request.use(fulfilled2, rejected2)
+       * 
+       * 那么最终 requestInterceptorChain = [fulfilled2, rejected2, fulfilled1, rejected1,]
+       */
       requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
     });
     // 响应拦截器
@@ -84,14 +91,17 @@ class Axios {
 
     let promise;
     if (!synchronousRequestInterceptors) {
-      // 如果没有同步请求拦截器
+      // 到了这里说明有配置了请求拦截器，但有至少一个拦截器是异步的
+      // 由于下面要生成promise链，且promise.then有两个回调参数，故这里增加一个undefined，使之成对
       let chain = [dispatchRequest, undefined];
       // 将request放chain前，response放后，
       // 即newChain = [...requestInterceptorChain, ...chain, ...responseInterceptorChain]
+      // eg: const a = [1];Array.prototype.unshift.apply(a, [2, 3]); a = [2, 3, 1]
       Array.prototype.unshift.apply(chain, requestInterceptorChain);
       chain = chain.concat(responseInterceptorChain);
 
       promise = Promise.resolve(config);
+      debugger
       // 然后循环生成promise
       while (chain.length) {
         promise = promise.then(chain.shift(), chain.shift());
@@ -101,6 +111,10 @@ class Axios {
     }
 
     // 到了这里就是同步的拦截器了
+    // synchronousRequestInterceptors为true可能的3种情况是：
+    // 1.没有请求拦截器
+    // 2.有请求拦截器拦截器但不是每个拦截器都设置了synchronous为true，
+    // 3或者每个请求拦截器都设置了runWhen但都返回false
     // 和上面不同，对于请求拦截器，会同步执行，之后dispatchRequest和responseInterceptorChain才会异步处理
     // 生成链式promise
     let newConfig = config;
@@ -129,7 +143,21 @@ class Axios {
 
     return promise as unknown as Promise<R>;
   };
-
+  /** 
+   * 根据传入的请求配置对象返回一个请求的url
+   * 
+   * @example
+   * 
+   * const config = {
+   *   url: "/user/xxx",
+   *   params: {
+   *     a: 1,
+   *     b: 2,
+   *     c: 3
+   *   }
+   * };
+   * console.log(axios.getUri(config)); // /user/xxx?a=1&b=2&c=3
+   *  */
   getUri(config: AxiosRequestConfig): string {
     config = mergeConfig(this.defaults, config);
     return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');

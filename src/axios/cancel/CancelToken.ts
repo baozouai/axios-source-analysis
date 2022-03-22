@@ -56,10 +56,10 @@ class CancelToken {
   
       return promise as typeof promise & { cancel(): void};
     };
-  
+
     executor(function cancel(message) {
       if (token.reason) {
-        // 下面会把复制token.reason，使用判断到有值，说明已经取消了
+        // 下面会赋值token.reason，使用判断到有值，说明已经取消了
         // Cancellation has already been requested
         return;
       }

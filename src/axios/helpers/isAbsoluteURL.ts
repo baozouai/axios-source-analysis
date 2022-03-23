@@ -1,6 +1,8 @@
 'use strict';
 
 /**
+ * @description 是否是绝对路径，如果是以"<scheme>://"开头或者’xxx//‘、'//',那么是绝对路径
+ * 
  * Determines whether the specified URL is absolute
  *
  * @param {string} url The URL to test

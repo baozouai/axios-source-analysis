@@ -49,7 +49,8 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
   );
 
   // Flatten headers
-  // 可简单理解为config.headers = {...config.headers.common, ...config.headers[config.method], ...config.header}
+  // 可简单理解为config.headers = {...config.headers.common, ...config.headers[config.method], ...config.headers}
+  // 即不同method对应的headers会覆盖common
   config.headers = merge(
     config.headers.common || {},
     config.headers[config.method!] || {},
@@ -78,7 +79,7 @@ function throwIfCancellationRequested<T>(config: AxiosRequestConfig<T>) {
     throwIfCancellationRequested(config);
 
     // Transform response data
-    // 转换响应数据
+    // 到了这里，就是没取消请求了，转换响应数据
     response.data = transformData.call(
       config,
       response.data,

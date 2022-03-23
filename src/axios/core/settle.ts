@@ -5,6 +5,7 @@ import createError from './createError';
 
 /**
  * @description 根据响应状态码决定要resolve还是reject
+ * 
  * Resolve or reject a Promise based on response status.
  *
  * @param {Function} resolve A function that resolves the promise.

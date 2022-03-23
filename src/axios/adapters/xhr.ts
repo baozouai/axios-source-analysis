@@ -80,7 +80,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         config,
         request,
       };
-
+      // 根据响应状态码决定要resolve还是reject 
       settle(function _resolve(value) {
         resolve(value);
         done();
@@ -91,6 +91,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
       }, response);
 
       // Clean up request
+      //置为null，好让垃圾回收
       // @ts-ignore
       request = null;
     }
@@ -101,17 +102,17 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     } else {
       // Listen for ready state to emulate onloadend
       request.onreadystatechange = function handleLoad() {
-        if (!request || request.readyState !== 4) {
-          return;
-        }
+        if (!request || request.readyState !== 4) return
 
         // The request errored out and we didn't get a response, this will be
         // handled by onerror instead
         // With one exception: request that using file: protocol, most browsers
         // will return status as 0 even though it's a successful request
-        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-          return;
-        }
+        /**
+         * 如果请求报错了，那么获取不到response，而是会被onerror处理
+         * 但有一个例外：即请求使用的是file:协议，其失败了但还是会触发onreadystatechange，返回状态码0，这里拦截一下
+         */
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) return
         // readystate handler is calling before onerror or ontimeout handlers,
         // so we should call onloadend on the next 'tick'
         // readyState的调用是在onerror或ontimeout之前，所以这里放到下一个tick中
@@ -185,7 +186,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         // 这里针对Content-Type
         if (typeof requestData === 'undefined' && (key as string).toLowerCase() === 'content-type') {
           // Remove Content-Type if data is undefined
-          // 如果没有请求体，且请求头有Content-Type, 那么删除掉，因为没有请求头，不需要该请求头
+          // 如果没有请求体，且请求头有Content-Type, 那么删除掉，因为没有请求体，不需要该请求头
           delete requestHeaders[key];
         } else {
           // 其他的加上对应的请求头，当然如果有请求体，且请求头有Content-Type，那么请求要加上
@@ -245,7 +246,8 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
       config.cancelToken?.subscribe(onCanceled);
       if (config.signal) {
         // @ts-ignore
-        // 如果已经aborted了，那么直接执行onCanceled，否则监听signal是否abort，是的话调用回调onCanceled
+        // 如果已经aborted了，那么直接执行onCanceled，这个发生在请求之前
+        // 否则监听signal是否abort，是的话调用回调onCanceled，这个发生在请求之后
         config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }

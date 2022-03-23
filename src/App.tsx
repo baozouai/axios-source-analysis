@@ -2,7 +2,7 @@ import { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
 import All from '@/examples/all'
-import Amd from './examples/amd'
+import Interceptors from './examples/interceptors'
 import Post from './examples/post'
 import TransformResponse from './examples/transform-response'
 import CancelRequest from './examples/cancel-request'
@@ -46,4 +46,4 @@ function App() {
   )
 }
 
-export default Amd
+export default Interceptors

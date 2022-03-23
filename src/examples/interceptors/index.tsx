@@ -9,10 +9,11 @@ console.log(axios.getUri({
     idTest: 2,
     testString: "thisIsATest"
   }
-}))
+})) // ttps://www.baidu.com/user/NLRX?idClient=1&isTest=2&testString=thisIsATest
 // 注意请求拦截器会从后往前执行，而响应拦截器则相反，是按照use的顺序
 axios.interceptors.request.use(function (config) {
   debugger
+  console.log('requestInterceptor2');
   // Do something before request is sent
   return config;
 }, function (error) {
@@ -22,6 +23,7 @@ axios.interceptors.request.use(function (config) {
 // 这个比上面的先进入
 axios.interceptors.request.use(function (config) {
   debugger
+  console.log('requestInterceptor1');
   // Do something before request is sent
   return config;
 }, function (error) {
@@ -31,6 +33,7 @@ axios.interceptors.request.use(function (config) {
 // Add a response interceptor
 axios.interceptors.response.use(function (response) {
   debugger
+  console.log('responseInterceptor1');
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
   return response;
@@ -43,13 +46,14 @@ axios.interceptors.response.use(function (response) {
   debugger
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
+  console.log('responseInterceptor2');
   return response;
 }, function (error) {
   // Any status codes that falls outside the range of 2xx cause this function to trigger
   // Do something with response error
   return Promise.reject(error);
 });
-export default function Amd() {
+export default function Interceptors() {
   const [{avatar_url, name}, setstate] = useState<State>({})
   useEffect(() => {
     axios.get<State>('https://api.github.com/users/mzabriskie')
@@ -63,7 +67,7 @@ export default function Amd() {
   }, [])
   return (
     <>
-      <h1>AMD</h1>
+      <h1>Interceptors</h1>
       <div>
         <h3>User</h3>
         <div className="row">

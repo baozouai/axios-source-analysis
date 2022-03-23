@@ -35,6 +35,8 @@ export class InterceptorManager<V> {
     }
   };
   /**
+   * @description 将每个非空的interceptor传给fn
+   * 
  * Iterate over all the registered interceptors
  *
  * This method is particularly useful for skipping over any

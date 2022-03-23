@@ -64,7 +64,7 @@ class Axios {
     // filter out skipped interceptors
     // 请求拦截器
     const requestInterceptorChain: any[] = [];
-    // 请求拦截器是否是同步的
+    // 请求拦截器是否是同步的，其实大部分情况下都是异步的
     let synchronousRequestInterceptors = true;
     // 遍历请求拦截器
     this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
@@ -72,7 +72,7 @@ class Axios {
       if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config as AxiosRequestConfig<D>) === false) {
         return;
       }
-      // 只要有一个是异步的，那么全部就都是异步的
+      // 只要有一个是异步的,即只要有一个synchronous为false，那么全部就都是异步的
       synchronousRequestInterceptors = !!(synchronousRequestInterceptors && interceptor.synchronous);
       /**
        * request.use(fulfilled1, rejected1)
@@ -104,6 +104,17 @@ class Axios {
       debugger
       // 然后循环生成promise
       while (chain.length) {
+        /**
+         * 比如chain = [fulfilled1, rejected1, dispatchRequest, undefined, fulfilled2, rejected2]
+         * 那么这里就是:
+         * Promise
+         * .resolve(config)
+         * .then(fulfilled1, rejected1)
+         * .then(dispatchRequest, undefined)
+         * .then(fulfilled2, rejected2)
+         * 
+         * fullFilled，dispatchRequest会接收到config，每个函数返回处理好的新的config
+         */
         promise = promise.then(chain.shift(), chain.shift());
       }
 
@@ -113,8 +124,9 @@ class Axios {
     // 到了这里就是同步的拦截器了
     // synchronousRequestInterceptors为true可能的3种情况是：
     // 1.没有请求拦截器
-    // 2.有请求拦截器拦截器但不是每个拦截器都设置了synchronous为true，
-    // 3或者每个请求拦截器都设置了runWhen但都返回false
+    // 2.有请求拦截器拦截器但每个拦截器都设置了synchronous为true，
+    // 3或者每个请求拦截器都设置了runWhen但都返回false，下面的
+    // synchronousRequestInterceptors = !!(synchronousRequestInterceptors && interceptor.synchronous)就不会走到
     // 和上面不同，对于请求拦截器，会同步执行，之后dispatchRequest和responseInterceptorChain才会异步处理
     // 生成链式promise
     let newConfig = config;
@@ -160,6 +172,7 @@ class Axios {
    *  */
   getUri(config: AxiosRequestConfig): string {
     config = mergeConfig(this.defaults, config);
+    // 有可能url为'',params不为空，那么得到的是?a=1&b=2,要去掉开头的?
     return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
   };
 

@@ -4,6 +4,8 @@ import isAbsoluteURL from '../helpers/isAbsoluteURL';
 import combineURLs from '../helpers/combineURLs';
 
 /**
+ * @description 如果requestedURL是绝对路径，直接返回requestedURL， 否则返回baseURL和requestedURL拼接
+ * 
  * Creates a new URL by combining the baseURL with the requestedURL,
  * only when the requestedURL is not already an absolute URL.
  * If the requestURL is absolute, this function returns the requestedURL untouched.

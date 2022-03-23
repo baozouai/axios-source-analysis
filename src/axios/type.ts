@@ -139,7 +139,7 @@ export interface AxiosRequestConfig<D = any> {
    *     ID: 12345
    *   }
    */
-  params?: any;
+  params?: Record<string, any> | URLSearchParams;
   /**
    *  `paramsSerializer`是可选方法，主要用于序列化`params`
    * 
@@ -169,6 +169,9 @@ export interface AxiosRequestConfig<D = any> {
    * timeout: 1000 //  默认值是 `0` (永不超时)
    */
   timeout?: number;
+  /**
+   * 超时的提示
+   */
   timeoutErrorMessage?: string;
   /**
    * `withCredentials` 表示跨域请求时是否需要使用凭证
@@ -325,9 +328,17 @@ export interface AxiosRequestConfig<D = any> {
    *   }
    */
   proxy?: AxiosProxyConfig | false;
-  /**
-   * @example
-   * cancelToken: new CancelToken(function (cancel) {})
+  /** 
+   * @description 用于取消请求
+   * @example 
+   *  const CancelToken = axios.CancelToken
+   *  const source = CancelToken.source()
+   *  axios.get<State>('https://api.github.com/users/mzabriskie', {
+   *    cancelToken: source.token,
+   *  })
+   *  两种方式取消请求：
+   *  1.source.token.reason = new axios.Cancel('取消请求xxx')
+   *  2.source.cancel('取消请求')
    */
   cancelToken?: CancelToken;
   /**
@@ -340,6 +351,17 @@ export interface AxiosRequestConfig<D = any> {
    */
   decompress?: boolean;
   transitional?: TransitionalOptions;
+  /**
+   * @description 取消请求的另一种方式
+   * @example
+   *  const controller = new AbortController()
+   *  const { signal } = controller
+   *  axios.get<State>('https://api.github.com/users/mzabriskie', {
+   *    signal,
+   *  })
+   *  // 这里abort后会把signal.aboarted设为true，其是个readonly，故需要通过controller.abort()来设置
+   * controller.abort()
+   */
   signal?: AbortSignal;
   insecureHTTPParser?: boolean;
   transport?: Transport

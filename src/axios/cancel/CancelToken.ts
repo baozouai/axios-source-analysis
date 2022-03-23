@@ -27,7 +27,7 @@ class CancelToken {
     const token = this;
   
     // 通过CancelToken的source能得到对应的cancel，调用cancel('xxx')后就会执行下面的resolvePromise(token.reason);
-    // 那么这里的then就执行 了，那么就会执行对应的listeners，而如果axios中传的config有cancelToken的话，那么就会把xhr中的
+    // 那么这里的then就执行了，那么就会执行对应的listeners，而如果axios中传的config有cancelToken的话，那么就会把xhr中的
     // onCanceled 给subscribe，那么onCanceled就是在_listeners中，那么执行_listeners遇到onCanceled就会把 request.abort();
     // 那么请求就取消了
     this.promise.then(function(cancel) {
@@ -65,9 +65,11 @@ class CancelToken {
       }
   
       token.reason = new Cancel(message);
+      // 这里resolve后会执行上面的第一个then回调，去执行listeners
       resolvePromise(token.reason);
     });
   }
+  /** 有reason才throw */
   throwIfRequested() {
     if (this.reason) {
       throw this.reason;
@@ -75,11 +77,12 @@ class CancelToken {
   };
   
   subscribe(listener: CancelListener) {
+    // 已经有错误了，那么立即执行该listner
     if (this.reason) {
       listener(this.reason);
       return;
     }
-  
+    // 否则放入listeners中等待执行
     if (this._listeners) {
       this._listeners.push(listener);
     } else {

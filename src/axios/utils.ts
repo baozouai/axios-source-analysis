@@ -191,7 +191,8 @@ export function trim(str: string): string {
 }
 
 /**
- * 是否是标准的浏览器环境
+ * @description 是否是标准的浏览器环境
+ * 
  * Determine if we're running in a standard browser environment
  *
  * This allows axios to run in a web worker, and react-native.

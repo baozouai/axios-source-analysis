@@ -37,6 +37,8 @@ export default function CancelRequest() {
     //     })
     //   }).catch(function (error) {
     //     if (axios.isCancel(error)) {
+    //       对于source.token.reason = new axios.Cancel('取消请求xxx')，这里的message就是【Cancel：取消请求xxx】
+    //       对于source.cancel('取消请求')，这里的message就是【取消请求】
     //       console.log('Request canceled', error.message);
     //     } else {
     //       // 处理错误
@@ -47,7 +49,7 @@ export default function CancelRequest() {
     // source.cancel('取消请求')
     /** ---------- cancelToken------------------------------------- */
 
-    // 2.第二种取消请求的，本质可第一种相同，只是第一种封装了逻辑
+    // 2.第二种取消请求的，本质和第一种相同，只是第一种封装了逻辑
     // controller.abort()
     let cancel!: Canceler
     axios.get<State>('https://api.github.com/users/mzabriskie', {

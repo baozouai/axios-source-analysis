@@ -12,7 +12,8 @@ const ignoreDuplicateOf = [
 ];
 
 /**
- * 解析haader为对象
+ * @description 解析header为对象
+ * 
  * Parse headers into an object
  *
  * ```
@@ -53,7 +54,7 @@ export default function parseHeaders(headers?: string) {
   let val;
   let i;
   // 如果没有headers，那么返回空对象
-  if (!headers) { return parsed; }
+  if (!headers)  return parsed;
   // 响应头都是以回车键分隔的key:value,所有这里先split下
   forEach(headers.split('\n'), function parser(line) {
     i = line.indexOf(':');
@@ -63,12 +64,12 @@ export default function parseHeaders(headers?: string) {
 
     if (key) {
       // 如果已经有该key且该key是要忽略的，那么不添加到result上
-      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+      if (parsed[key] && ignoreDuplicateOf.includes(key)) {
         return;
       }
       // 如果是set-cookie，那么需要放到数组里
       if (key === 'set-cookie') {
-        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+        parsed[key] = (parsed[key] || []).concat([val]);
       } else {
         // 相同key要用', '分隔
         parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;

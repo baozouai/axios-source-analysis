@@ -15,6 +15,10 @@ const routeConfigs = [
     Element: All,
   },
   {
+    path: 'cancel-request',
+    Element: CancelRequest,
+  },
+  {
     path: 'interceptors',
     Element: Interceptors,
   },
@@ -29,10 +33,6 @@ const routeConfigs = [
   {
     path: 'transform-response',
     Element: TransformResponse,
-  },
-  {
-    path: 'cancel-request',
-    Element: CancelRequest,
   },
   {
     path: 'upload',

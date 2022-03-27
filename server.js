@@ -29,7 +29,7 @@ const people = [
 ];
 
 const server = http.createServer((req, res) => {
-  console.log(req.url);
+
   res.setHeader(
     'Access-Control-Allow-Origin', '*'
   )

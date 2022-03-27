@@ -51,6 +51,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     }
     // 如果有baseURL,那么合并成fullPath
     const fullPath = buildFullPath(config.baseURL, config.url);
+    console.log(fullPath)
     // method要大写，将params序列话拼接到fullPath上，如params={a: 1, b: 2}, 
     // fullPath = 'https://baozouai.com/post', 那么buildURL后为https://baozouai.com/post?a=1&b=2
     // 如果有配置paramsSerializer，那么可以自定义params序列化

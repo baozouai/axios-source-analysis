@@ -56,7 +56,6 @@ export type ResponseType =
   | 'json'
   | 'text'
   | 'stream'
-
 export interface TransitionalOptions{
   /** 是否忽略JSON.parse(response.body)的错误 */
   silentJSONParsing: boolean;
@@ -250,7 +249,7 @@ export interface AxiosRequestConfig<D = any> {
    *     // 处理原生进度事件
    * }
    */
-  onUploadProgress?: (progressEvent: any) => void;
+  onUploadProgress?: (progressEvent: ProgressEvent) => void;
   /**
    *  `onDownloadProgress` 允许为下载处理进度事件，为浏览器专属
    * 
@@ -259,7 +258,7 @@ export interface AxiosRequestConfig<D = any> {
    *   // 处理原生进度事件
    * }
    */
-  onDownloadProgress?: (progressEvent: any) => void;
+  onDownloadProgress?: (progressEvent: ProgressEvent) => void;
   /**
    * `maxContentLength` 定义了node.js中允许的HTTP响应内容的最大字节数
    * 

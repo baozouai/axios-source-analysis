@@ -1,18 +1,18 @@
-<!doctype html>
-<html>
-  <head>
-    <title>axios - get example</title>
-    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
-  </head>
-  <body class="container">
-    <h1>axios.get</h1>
-    <ul id="people" class="list-unstyled"></ul>
+import { useEffect } from 'react'
+import axios from 'axios'
 
-    <script src="/axios.min.js"></script>
-    <script>
-      axios.get('/get/server')
+export default function Get() {
+  
+  useEffect(() => {
+    axios.get<{
+      avatar: string
+      name: string
+      github: string
+      twitter: string
+    }[]>('get')
         .then(function (response) {
-          document.getElementById('people').innerHTML = response.data.map(function (person) {
+          console.log(response.data);
+          document.getElementById('people')!.innerHTML = response.data.map(function (person) {
             return (
               '<li class="row">' +
                 '<img src="https://avatars.githubusercontent.com/u/' + person.avatar + '?s=50" class="col-md-1"/>' +
@@ -26,8 +26,13 @@
           }).join('');
         })
         .catch(function (err) {
-          document.getElementById('people').innerHTML = '<li class="text-danger">' + err.message + '</li>';
+          document.getElementById('people')!.innerHTML = '<li class="text-danger">' + err.message + '</li>';
         });
-    </script>
-  </body>
-</html>
+  }, [])
+  return (
+    <div>
+      <h1>axios.get</h1>
+      <ul id="people" className="list-unstyled"/>
+    </div>
+  )
+}

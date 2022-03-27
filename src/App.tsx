@@ -1,49 +1,78 @@
-import { useState } from 'react'
-import logo from './logo.svg'
 import './App.css'
 import All from '@/examples/all'
+import CancelRequest from './examples/cancel-request'
+import Get from './examples/get'
 import Interceptors from './examples/interceptors'
 import Post from './examples/post'
 import TransformResponse from './examples/transform-response'
-import CancelRequest from './examples/cancel-request'
-function App() {
-  const [count, setCount] = useState(0)
+import Upload from './examples/upload'
+import { Link } from 'react-router-dom'
+import { Routes, Route, Outlet } from 'react-router'
 
+const routeConfigs = [
+  {
+    path: 'all',
+    Element: All,
+  },
+  {
+    path: 'interceptors',
+    Element: Interceptors,
+  },
+  {
+    path: 'get',
+    Element: Get,
+  },
+  {
+    path: 'post',
+    Element: Post,
+  },
+  {
+    path: 'transform-response',
+    Element: TransformResponse,
+  },
+  {
+    path: 'cancel-request',
+    Element: CancelRequest,
+  },
+  {
+    path: 'upload',
+    Element: Upload,
+  },
+]
+function Layout() {
+  debugger
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <>
+     <p>主页面</p>
+      <ul>
+        {
+          routeConfigs.map(({ path }) => {
+            if (path === '*') return null
+            return (
+              <li key={path}>
+                <Link to={`/${path}`}>{path}</Link>
+              </li>
+            )
+          })
+        }
+      </ul>
+      <hr />
+      <Outlet />
+    </>
+  )
+}
+function App() {
+  debugger
+  return (
+    <Routes>
+      {/* 注意，这里不是LayoutRoute，因为LayoutRoute只允许element和children,而这里有path */}
+      <Route path='/' element={<Layout />}>
+        {
+          routeConfigs.map(({ path, Element }) => <Route key={path} path={`${path}${path === '*' ? '': '/*'}`} element={<Element />} />)
+        }
+      </Route>
+    </Routes>
   )
 }
 
-export default Interceptors
+export default App

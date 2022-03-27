@@ -21,7 +21,7 @@ yarn server
 
 <img src="./assets/cancel-request.png" alt="cancel-request" style="zoom:40%;" />
 
-- [interceptors](./src/examplesinterceptors/index.tsx)
+- [interceptors](./src/examples/interceptors/index.tsx)
 
 <img src="./assets/interceptors.png" alt="interceptors" style="zoom:28%;" />
 

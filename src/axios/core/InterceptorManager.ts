@@ -1,7 +1,7 @@
 'use strict';
 
 import { forEach } from '../utils';
-import { FulfilledFn, RejectedFn, AxiosRequestConfig, InterceptorConfig, Interceptor } from '../type'
+import { FulfilledFn, RejectedFn, InterceptorConfig, Interceptor } from '../type'
 
 export class InterceptorManager<V> {
   handlers: Array<Interceptor<V> | null> = [];
@@ -13,7 +13,7 @@ export class InterceptorManager<V> {
  *
  * @return {Number} An ID used to remove interceptor later
  */
-  use(onFulfilled?: FulfilledFn<V>, onRejected?: RejectedFn, options?: InterceptorConfig<AxiosRequestConfig<V>>): number {
+  use(onFulfilled?: FulfilledFn<V>, onRejected?: RejectedFn, options?: InterceptorConfig<V>): number {
     this.handlers.push({
       fulfilled: onFulfilled,
       rejected: onRejected,

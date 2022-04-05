@@ -35,7 +35,7 @@ class Axios {
       config = config || {};
     }
     // createInstance已经有extend(instance, context),所以这里this.defaults有值，
-    // 而我们get、post等传入第二个参数cconfig可以覆盖默认的配置
+    // 而我们get、post等传入第二个参数config可以覆盖默认的配置
     config = mergeConfig(this.defaults, config);
     // Set config.method
     // 注意这里把method转换为小写，目的是在dispatchRequest中可以匹配到config.headers![method]对应method的header，
@@ -97,6 +97,7 @@ class Axios {
       // 将request放chain前，response放后，
       // 即newChain = [...requestInterceptorChain, ...chain, ...responseInterceptorChain]
       // eg: const a = [1];Array.prototype.unshift.apply(a, [2, 3]); a = [2, 3, 1]
+      // eg: const a = [1];a.unshift(2, 3); a = [2, 3, 1]
       Array.prototype.unshift.apply(chain, requestInterceptorChain);
       chain = chain.concat(responseInterceptorChain);
 

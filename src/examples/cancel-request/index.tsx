@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Canceler } from '../../axios/type'
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 interface State { avatar_url?: string; name?: string }
 
 const CancelToken = axios.CancelToken
@@ -19,7 +19,6 @@ export default function CancelRequest() {
   const [{ avatar_url, name }, setstate] = useState<State>({})
   const [searchParams] = useSearchParams()
   const type = searchParams.get('type') || '1'
-  console.log(type);
   useEffect(() => {
     debugger
     // 1.第一种取消请求的

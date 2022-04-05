@@ -51,10 +51,10 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
     }
     // 如果有baseURL,那么合并成fullPath
     const fullPath = buildFullPath(config.baseURL, config.url);
-    console.log(fullPath)
     // method要大写，将params序列话拼接到fullPath上，如params={a: 1, b: 2}, 
     // fullPath = 'https://baozouai.com/post', 那么buildURL后为https://baozouai.com/post?a=1&b=2
     // 如果有配置paramsSerializer，那么可以自定义params序列化
+    // 第三个参数表示async，是否异步
     request.open(config.method!.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
     // Set the request timeout in MS
@@ -229,6 +229,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         if (!request) {
           return;
         }
+        // cancel && cancel.type是aborted的监听事件
         reject(!cancel || (cancel && cancel.type) ? new Cancel('canceled') : cancel);
         /**
          * 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。
@@ -243,7 +244,7 @@ export default  function xhrAdapter<D>(config: AxiosRequestConfig<D>) {
         // @ts-ignore
         request = null;
       };
-      // 有cancelToken，那么加入订阅
+      // 有cancelToken，那么加入订阅，如果cancelToken调用了cancel，那么这里就能触发onCanceled了
       config.cancelToken?.subscribe(onCanceled);
       if (config.signal) {
         // @ts-ignore

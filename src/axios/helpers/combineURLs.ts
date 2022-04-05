@@ -1,6 +1,8 @@
 'use strict';
 
 /**
+ * @description 拼接 `baseURL` 和 `relativeURL`
+ * 
  * Creates a new URL by combining the specified URLs
  *
  * @param {string} baseURL The base URL
